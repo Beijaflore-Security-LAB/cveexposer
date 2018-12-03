@@ -12,10 +12,11 @@ To launch the script :
 
 ```sh
  cveexposer -p <product> -v <version>
+ ```
    -h : help
    -p : for the product
    -v : for version because fuck verbose
-```
+
    
 Examples :
 ```sh
