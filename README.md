@@ -23,3 +23,7 @@ Examples :
 foo@bar:~$ cveexposer -p nginx -v 1.3.10
 Detect 6 CVE for nginx 1.3.10 : [0 critical,3 high,3 medium,0 low]
 ```
+```console
+foo@bar:~$ cveexposer -p drupal -v 7 
+Detect 68 CVE for drupal 7 : [0 critical,6 high,54 medium,8 low] and 6 public exploits [CVE-2018-7602 CVE-2018-7602 CVE-2018-7600 CVE-2018-7600 CVE-2018-7600 CVE-2007-6752]
+```
