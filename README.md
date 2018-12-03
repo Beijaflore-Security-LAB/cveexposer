@@ -19,7 +19,7 @@ To launch the script :
  ```
    
 Examples :
-```sh
-   cveexposer -p nginx -v 1.3.10
-   cveexposer -p drupal -v 7
+```console
+foo@bar:~$ cveexposer -p nginx -v 1.3.10
+Detect 6 CVE for nginx 1.3.10 : [0 critical,3 high,3 medium,0 low]
 ```
