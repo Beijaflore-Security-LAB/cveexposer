@@ -24,6 +24,6 @@ foo@bar:~$ cveexposer -p nginx -v 1.3.10
 Detect 6 CVE for nginx 1.3.10 : [0 critical,3 high,3 medium,0 low]
 ```
 ```console
-foo@bar:~$ cveexposer -p drupal -v 7 
+foo@bar:~$ cveexposer -p drupal -v 8
 Detect 18 CVE for drupal 8 : [0 critical,2 high,16 medium,0 low] and 3 public exploits [CVE-2018-7600 CVE-2018-7600 CVE-2018-7600]
 ```
