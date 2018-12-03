@@ -10,13 +10,13 @@ This Script search in cve.circl.lu known CVE & Exploit to qualified them with th
 #### GUIDE 
 To launch the script :
 
-```sh
+```
  cveexposer -p <product> -v <version>
- ```
+
    -h : help
    -p : for the product
    -v : for version because fuck verbose
-
+ ```
    
 Examples :
 ```sh
