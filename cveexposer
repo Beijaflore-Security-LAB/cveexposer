@@ -1,0 +1,110 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+YELLOW='\033[1;33m'
+ILOW='\033[1;93m'
+NC='\033[0m' # No Color
+
+if [ $# -eq 0 ]
+then 
+echo "use -h for help"
+exit
+fi
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+function usage()
+{
+	echo "This Script search in cve.circl.lu known CVE & Exploit to qualified them with the following rules :"
+	echo ""
+	echo "       Critical when CVSS >= 9 "
+	echo "       High when CVSS < 9 & >= 7 "
+	echo "       Medium when CVSS <= 4 & > 7 "
+	echo "       Low when CVSS < 4 "
+	echo ""
+	echo "Usage:"
+	echo "       -h to show this help"
+	echo "       -p for the product"
+	echo "       -v for version"
+	echo ""
+}
+
+case $key in
+	-h|--help)
+    usage
+    exit
+    ;;
+    -p)
+    PRODUCT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -v)
+    VERSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)
+    echo "use -h for help"
+    exit
+    ;;
+esac
+done
+
+clean() {
+    local a=${1//[^[:alnum:]]/}
+    echo "${a,,}"
+}
+
+
+
+
+curl -s -m 30 http://cve.circl.lu/api/search/$PRODUCT/$VERSION > /tmp/CVE_Exploit.json
+FILESIZE=$(stat -c '%s' /tmp/CVE_Exploit.json)
+
+if [ $FILESIZE -gt 50 ]
+				then 
+				if [ $(head -c 1 /tmp/CVE_Exploit.json) = "[" ]
+					then 
+					PROD_vulns=$(jq '.[] | .id' /tmp/CVE_Exploit.json | wc -l)
+					PROD_cvss=($(jq -r '.[] | .cvss' /tmp/CVE_Exploit.json ))
+					PROD_exploit=($(jq -r '.[] | select( .references | .[] | contains("exploit")) | .id' /tmp/CVE_Exploit.json | awk 1 ORS=' ' ))
+					
+				else 
+					PROD_vulns=$(jq '.data | .[] | .id' /tmp/CVE_Exploit.json | wc -l)
+					PROD_cvss=($(jq -r '.data | .[] | .cvss' /tmp/CVE_Exploit.json ))
+					PROD_exploit=($(jq -r '.data | .[] | select( .references | .[] | contains("exploit")) | .id' /tmp/CVE_Exploit.json | awk 1 ORS=' ' ))
+				fi
+PROD_exploit2=$(echo -n ${PROD_exploit[*]} | sed -e "s/ /,/g")
+				low=0
+				medium=0
+				high=0
+				critical=0
+				for j in ${PROD_cvss[*]}
+				do
+					if (( $(echo 9 '<=' $j |bc) ))
+						then ((critical++))
+					elif (( $(echo 4 '<=' $j |bc) )) && (( $(echo $j '<' 7 |bc) ))
+						then ((medium++))
+					elif (( $(echo 7 '<=' $j |bc) )) && (( $(echo $j '<' 9 |bc) ))
+						then ((high++))
+					else ((low++))
+					fi
+				done
+if [ ${#PROD_exploit[@]} = "0" ]
+					then
+					echo -e "Detect${RED} $PROD_vulns CVE${NC} for $PRODUCT $VERSION : [${RED}$critical critical${NC},${ORANGE}$high high${NC},${YELLOW}$medium medium${NC},$low low]"
+				else
+					echo -e "Detect${RED} $PROD_vulns CVE${NC} for $PRODUCT $VERSION : [${RED}$critical critical${NC},${ORANGE}$high high${NC},${YELLOW}$medium medium${NC},$low low] and ${RED}${#PROD_exploit[@]}${NC} public exploits [${PROD_exploit[*]}]"
+				fi
+			else 
+				echo -e "${NC} No CVE found for${GREEN} $PRODUCT $VERSION ${NC}"
+			fi
+rm /tmp/CVE_Exploit.json
+
+
