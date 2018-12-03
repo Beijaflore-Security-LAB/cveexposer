@@ -1,5 +1,5 @@
 #### DESCRIPTION
-This Script search in cve.circl.lu known CVE & Exploit to qualified them with the following rules :
+This Script searches in cve.circl.lu known CVE & Exploit and qualify them with the following rules :
 
        Critical when CVSS >= 9 
        High when CVSS < 9 & >= 7 
