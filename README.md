@@ -6,6 +6,7 @@ This Script searches in cve.circl.lu known CVE & Exploit and qualify them with t
        Medium when CVSS <= 4 & > 7 
        Low when CVSS < 4 
 
+This script uses jq and bc.
 
 #### GUIDE 
 To launch the script :
