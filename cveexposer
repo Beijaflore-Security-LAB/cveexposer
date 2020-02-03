@@ -64,22 +64,14 @@ clean() {
 
 
 
-curl -s -m 30 http://cve.circl.lu/api/search/$PRODUCT/$VERSION > /tmp/CVE_Exploit.json
+curl -s -m 60 http://cve.circl.lu/api/search/$PRODUCT/$VERSION > /tmp/CVE_Exploit.json
 FILESIZE=$(stat -c '%s' /tmp/CVE_Exploit.json)
 
 if [ $FILESIZE -gt 50 ]
 				then 
-				if [ $(head -c 1 /tmp/CVE_Exploit.json) = "[" ]
-					then 
-					PROD_vulns=$(jq '.[] | .id' /tmp/CVE_Exploit.json | wc -l)
-					PROD_cvss=($(jq -r '.[] | .cvss' /tmp/CVE_Exploit.json ))
-					PROD_exploit=($(jq -r '.[] | select( .references | .[] | contains("exploit")) | .id' /tmp/CVE_Exploit.json | awk 1 ORS=' ' ))
-					
-				else 
-					PROD_vulns=$(jq '.data | .[] | .id' /tmp/CVE_Exploit.json | wc -l)
-					PROD_cvss=($(jq -r '.data | .[] | .cvss' /tmp/CVE_Exploit.json ))
-					PROD_exploit=($(jq -r '.data | .[] | select( .references | .[] | contains("exploit")) | .id' /tmp/CVE_Exploit.json | awk 1 ORS=' ' ))
-				fi
+				PROD_vulns=$(jq '.results | .[] | .id' /tmp/CVE_Exploit.json | wc -l)
+				PROD_cvss=($(jq -r '.results | .[] | .cvss' /tmp/CVE_Exploit.json ))
+				PROD_exploit=($(jq -r '.results | .[] | select( .references | .[] | contains("exploit")) | .id' /tmp/CVE_Exploit.json | awk 1 ORS=' ' ))
 PROD_exploit2=$(echo -n ${PROD_exploit[*]} | sed -e "s/ /,/g")
 				low=0
 				medium=0
